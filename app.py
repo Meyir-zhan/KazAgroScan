@@ -4,7 +4,7 @@ import fetcher
 import analyzer
 
 date = st.sidebar.date_input('Select the date')
-coordinates = st.sidebar.text_input('Enter coordinates') 
+coordinates = st.sidebar.text_input('Enter coords as: lat, lon, lat, lon') 
 
 @st.cache_data
 def get_data_from_api(date, coordinates):

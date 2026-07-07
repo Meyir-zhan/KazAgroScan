@@ -5,9 +5,7 @@ import planetary_computer
 import rasterio
 
 class DataFetcher:
-    def __init__(self, endpoint_url, access_credentials, coordinates):
-        self.endpoint_url = endpoint_url
-        self.access_credentials = access_credentials
+    def __init__(self,coordinates):
         self.coordinates = coordinates
     
     def fetch_satalite_data(self, date):
