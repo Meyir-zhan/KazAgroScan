@@ -24,9 +24,11 @@ if st.button('Analyze Crop'):
             "type": "Polygon",
             "coordinates": [points]
         }
+
+        date_str = date.isoformat()
         
         
-        red, nir = get_data_from_api(date, geometry)
+        red, nir = get_data_from_api(date_str, geometry)
 
     analyzer_instance = analyzer.DataAnalayzer(red, nir)
     ndvi = analyzer_instance.calculate_ndvi()
