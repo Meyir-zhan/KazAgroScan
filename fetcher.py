@@ -13,6 +13,9 @@ class DataFetcher:
         search = catalog.search(collections=["sentinel-2-l2a"], datetime=date, intersects=self.coordinates)
         item = search.item_collection()[0]
 
+        if len(item) == 0:
+       
+            raise ValueError("No satellite data found for this location and date.")
 
         signed_red = planetary_computer.sign(item.assets["B04"].href)
         signed_nir = planetary_computer.sign(item.assets["B08"].href)
