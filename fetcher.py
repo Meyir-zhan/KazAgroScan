@@ -1,5 +1,3 @@
-import requests
-import numpy 
 import pystac_client
 import planetary_computer
 import rasterio
