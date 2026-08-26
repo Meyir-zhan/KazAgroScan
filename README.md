@@ -1,6 +1,6 @@
 # KazAgroScan
 
-KazAgroScan is a Python-based dashboard that analyzes crop health using satellite imagery. It leverages cloud-native geospatial tools to fetch and process satellite data dynamically.
+KazAgroScan is a Python-based dashboard that analyzes crop health using satellite images. It leverages cloud-native geospatial tools to fetch and process satellite data dynamically.  
 
 ## Key Features
 * **Cloud-Native Pipeline:** Streams satellite imagery directly from the Microsoft Planetary Computer using STAC (SpatioTemporal Asset Catalog).
