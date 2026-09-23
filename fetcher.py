@@ -1,6 +1,7 @@
 import pystac_client
 import planetary_computer
 import rasterio
+from rasterio.windows import from_bounds
 
 class DataFetcher:
     def __init__(self,coordinates):
@@ -21,11 +22,18 @@ class DataFetcher:
         signed_red = planetary_computer.sign(item.assets["B04"].href)
         signed_nir = planetary_computer.sign(item.assets["B08"].href)
 
+        cords = self.coordinates["coordinates"][0]
+        min_x = min(pt[0] for pt in cords)
+        min_y = min(pt[1] for pt in cords)
+        max_x = max(pt[0] for pt in cords)
+        max_y = max(pt[1] for pt in cords)
 
         with rasterio.open(signed_red) as red_ds:
-            red = red_ds.read(1)
+            window_red = from_bounds(min_x,min_y,max_x,max_y, transform=red_ds.transform)
+            red = red_ds.read(1, window = window_red)
 
         with rasterio.open(signed_nir) as nir_ds:
-            nir = nir_ds.read(1)
+            window_nir = from_bounds(min_x,min_y,max_x,max_y, transform=nir_ds.transform)
+            nir = nir_ds.read(1, window = window_nir)
 
         return red, nir
