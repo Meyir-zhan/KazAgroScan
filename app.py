@@ -30,7 +30,7 @@ if st.button('Analyze Crop'):
         
         red, nir = get_data_from_api(date_str, geometry)
 
-    analyzer_instance = analyzer.DataAnalayzer(red, nir)
+    analyzer_instance = analyzer.DataAnalyzer(red, nir)
     ndvi = analyzer_instance.calculate_ndvi()
     st.write("NVDI Calculation is complete")
     fig = px.imshow(ndvi, color_continuous_scale='RdYlGn') 
