@@ -2,6 +2,7 @@ import pystac_client
 import planetary_computer
 import rasterio
 from rasterio.windows import from_bounds
+from rasterio.warp import transform_bounds
 
 class DataFetcher:
     def __init__(self,coordinates):
@@ -29,11 +30,18 @@ class DataFetcher:
         max_y = max(pt[1] for pt in cords)
 
         with rasterio.open(signed_red) as red_ds:
-            window_red = from_bounds(min_x,min_y,max_x,max_y, transform=red_ds.transform)
-            red = red_ds.read(1, window = window_red)
-
+            
+            left, bottom, right, top = transform_bounds(
+                "EPSG:4326", red_ds.crs, min_x, min_y, max_x, max_y
+            )
+            window_red = from_bounds(left, bottom, right, top, transform=red_ds.transform)
+            red = red_ds.read(1, window=window_red)
+        
         with rasterio.open(signed_nir) as nir_ds:
-            window_nir = from_bounds(min_x,min_y,max_x,max_y, transform=nir_ds.transform)
-            nir = nir_ds.read(1, window = window_nir)
-
+            left, bottom, right, top = transform_bounds(
+                "EPSG:4326", nir_ds.crs, min_x, min_y, max_x, max_y
+            )
+            window_nir = from_bounds(left, bottom, right, top, transform=nir_ds.transform)
+            nir = nir_ds.read(1, window=window_nir)
+        
         return red, nir
