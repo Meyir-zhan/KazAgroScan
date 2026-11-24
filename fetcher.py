@@ -2,21 +2,21 @@ import pystac_client
 import planetary_computer
 import rasterio
 from rasterio.windows import from_bounds
+from rasterio.warp import transform_bounds
 
 class DataFetcher:
     def __init__(self,coordinates):
         self.coordinates = coordinates
     
-    def fetch_satalite_data(self, date):
+    def fetch_satellite_data(self, date):
         catalog = pystac_client.Client.open("https://planetarycomputer.microsoft.com/api/stac/v1")
         search = catalog.search(collections=["sentinel-2-l2a"], datetime=date, intersects=self.coordinates)
 
         items = search.item_collection()
         
-        print(f"DEBUG: Found {len(items)} items.")
+        print(f"Found {len(items)} items.")
         if len(items) == 0:
-       
-            raise ValueError("No satellite data found for this location and date.")
+            return None, None
 
         item = items[0]
         signed_red = planetary_computer.sign(item.assets["B04"].href)
@@ -29,11 +29,14 @@ class DataFetcher:
         max_y = max(pt[1] for pt in cords)
 
         with rasterio.open(signed_red) as red_ds:
-            window_red = from_bounds(min_x,min_y,max_x,max_y, transform=red_ds.transform)
+            left, bottom, right, top = transform_bounds("EPSG:4326", red_ds.crs, min_x, min_y, max_x, max_y)
+            window_red = from_bounds(left, bottom, right, top, transform=red_ds.transform)
             red = red_ds.read(1, window = window_red)
+            
 
         with rasterio.open(signed_nir) as nir_ds:
-            window_nir = from_bounds(min_x,min_y,max_x,max_y, transform=nir_ds.transform)
+            left, bottom, right, top = transform_bounds("EPSG:4326", nir_ds.crs, min_x, min_y, max_x, max_y)
+            window_nir = from_bounds(left, bottom, right, top, transform=nir_ds.transform)
             nir = nir_ds.read(1, window = window_nir)
 
         return red, nir
