@@ -3,6 +3,7 @@ import plotly.express as px
 import fetcher
 import analyzer
 import folium 
+import datetime
 from folium.plugins import Draw
 from streamlit_folium import st_folium 
 
@@ -10,7 +11,23 @@ m = folium.Map(location=[48.0, 68.0], zoom_start=4)
 Draw(export=False).add_to(m)
 map_data = st_folium(m, width=700, height=450)
 
-date = st.sidebar.date_input('Select the date')
+
+start_date = st.sidebar.date_input(
+    'Select the starting date',
+    value = datetime.date.today() - datetime.timedelta(days=7),
+    min_value = datetime.date(2020, 1, 1),
+    max_value = datetime.date.today(),
+)
+end_date = st.sidebar.date_input(
+    'Select the end date',
+    value = datetime.date.today(),
+    min_value = datetime.date(2020, 1, 1),
+    max_value = datetime.date.today(),    
+)
+
+if start_date > end_date or start_date == end_date:
+    st.warning("Select the range")
+    st.stop()
 
 @st.cache_data
 def get_data_from_api(date, geometry):
@@ -21,10 +38,10 @@ def get_data_from_api(date, geometry):
 if st.button('Analyze Crop'):
     if map_data and map_data["all_drawings"] and len(map_data["all_drawings"]) > 0:
         geometry = map_data["all_drawings"][-1]["geometry"]
-        date_str = date.isoformat()
+        date_str = f"{start_date.isoformat()}/{end_date.isoformat()}"
         red, nir = get_data_from_api(date_str, geometry)
 
-        if red == None and nir == None:
+        if red is None and nir is None:
             st.warning("No satellite data found for this location and date.  "
                         " Try another date or draw a larger area on the map.")
             st.stop()
